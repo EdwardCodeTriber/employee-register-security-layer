@@ -1,0 +1,30 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+employee-register-node-firebase-adminsdk-f7oio-5266eefcf2.json
+
+employee-register-node-firebase-adminsdk-f7oio-7caecc736a.json
+
+employee-node-6d9ec-firebase-adminsdk-44lp0-b147227770.json

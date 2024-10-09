@@ -1,7 +1,7 @@
 
-## Employee-Registrstion with Node and firebase
+## Employee-Registrstion
 - This application was made to keep track of employees in a company
-- It utilises Firebase to keep track of the employees 
+- It utilises local Storage to keep track of the employees 
 
 ## LogIn Credentials
 
@@ -11,11 +11,7 @@
     #These can be edited on runtime, But if reseted it will start Over from Default
 
 ## Installation
-rounded-systems/employee-register
-- npm install @mui/material @emotion/react @emotion/styled @mui/icons-material react-router-dom axios
-rounded-systems/server
-- npm install express nodemon
-- npm install nodemon -D
+- npm install @mui/material @emotion/react @emotion/styled @mui/icons-material react-router-dom
 ## Run 
 - npm run dev
 ## Requirements
