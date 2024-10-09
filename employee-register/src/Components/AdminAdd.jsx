@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Avatar } from '@mui/material';
+import { TextField, Button, Typography, Container, Avatar, Grid, Box } from '@mui/material';
 import { db, auth, storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -53,18 +53,21 @@ const AdminAdd = () => {
   };
 
   return (
-    <Container>
-      <Typography variant="h6">Add New Admin</Typography>
-      <form onSubmit={handleSubmit}>
+    <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h6" align="center" gutterBottom>Add New Admin</Typography>
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField label="Email" name="email" value={formData.email} onChange={handleChange} fullWidth required />
         <TextField label="Password" name="password" type="password" value={formData.password} onChange={handleChange} fullWidth required />
         <TextField label="Name" name="name" value={formData.name} onChange={handleChange} fullWidth required />
         <TextField label="Surname" name="surname" value={formData.surname} onChange={handleChange} fullWidth required />
         <TextField label="Age" name="age" value={formData.age} onChange={handleChange} fullWidth required />
         <TextField label="ID Number" name="idNumber" value={formData.idNumber} onChange={handleChange} fullWidth required />
-        <input type="file" accept="image/*" onChange={handlePhotoChange} required />
+        <Button variant="outlined" component="label" fullWidth>
+          Upload Photo
+          <input type="file" accept="image/*" onChange={handlePhotoChange} hidden required />
+        </Button>
         <Button type="submit" variant="contained" color="primary">Add Admin</Button>
-      </form>
+      </Box>
     </Container>
   );
 };

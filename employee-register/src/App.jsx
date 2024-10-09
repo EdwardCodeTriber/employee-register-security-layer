@@ -4,6 +4,8 @@ import EmployeeList from './Components/EmployeeList';
 import Login from './Components/Login';
 import DeletedEmployees from './Components/DeletedEmployees';
 import { auth } from './firebase'; // Import the auth
+import AdminAdd from "./Components/AdminAdd";
+import AdminManage from "./Components/AdminMnange";
 
 const App = () => {
   // State for authenticated admin
@@ -64,6 +66,8 @@ const App = () => {
             )}
           />
           <Route path="/login" element={<Login setAdmin={handleLogin} />} />
+          <Route path="/AdminAdd" element={<AdminAdd/>}/>
+          <Route path="/AdminManage" element={<AdminManage/>}/>
           <Route path="/deleted" element={<DeletedEmployees />} />
         </Routes>
     </Router>

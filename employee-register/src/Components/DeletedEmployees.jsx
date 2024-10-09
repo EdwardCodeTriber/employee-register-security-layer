@@ -31,7 +31,7 @@ const DeletedEmployees = () => {
         const employees = response.data.map((employee) => ({
           ...employee,
           deletedAt: employee.deletedAt
-            ? moment(employee.deletedAt).format("MM/DD/YYYY hh:mm A")
+            ? moment(employee.deletedAt).format("MM/DD/YYYY")
             : "N/A",
         }));
         setDeletedEmployees(employees);
