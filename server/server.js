@@ -2,7 +2,7 @@ const express = require("express");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { v4: uuidv4 } = require("uuid");
+
 
 // Firebase Admin SDK initialization
 const serviceAccount = require("./employee-node-6d9ec-firebase-adminsdk-44lp0-b147227770.json");
@@ -59,46 +59,59 @@ app.get("/api/employees", async (req, res) => {
 });
 
 // POST METHOD - Add a new employee
-app.post("/api/employees", async (req, res) => {
+app.post('/api/employees', async (req, res) => {
   try {
     const { name, surname, position, email, idNumber, picture } = req.body;
 
-    // Validate required fields
     if (!name || !surname || !position || !email || !idNumber) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({ error: 'Missing required fields' });
     }
-    /// Auto ID
 
-    // const employeeId = uuidv4();
+    // Get and increment the lastEmployeeId counter
+    const counterRef = db.collection('counters').doc('employeeCounter');
+    let newEmployeeId;
 
+    await db.runTransaction(async (transaction) => {
+      const counterDoc = await transaction.get(counterRef);
+      if (!counterDoc.exists) {
+        // Initialize 
+        newEmployeeId = 1;
+        transaction.set(counterRef, { lastEmployeeId: newEmployeeId });
+      } else {
+        // Increment lastEmployeeId by 1
+        newEmployeeId = counterDoc.data().lastEmployeeId + 1;
+        transaction.update(counterRef, { lastEmployeeId: newEmployeeId });
+      }
+    });
+
+    // Create new employee with incremented ID
     const newEmployee = {
-      // id: employeeId, // Store this unique ID in the document
+      idEmp: newEmployeeId,
       name,
       surname,
       position,
       email,
       idNumber,
-      picture: picture || null, // Make picture optional
+      picture: picture || null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
-    const docRef = await db.collection("employees").add(newEmployee);
+    // Save new employee data with custom document ID
+    const docRef = db.collection('employees').doc(newEmployeeId.toString());
+    await docRef.set(newEmployee);
 
-    // Fetch the newly created document to get the server-generated timestamp
+    // Fetch the newly created document to include server timestamp in response
     const newDoc = await docRef.get();
-    const savedEmployee = { id: docRef.id, ...newDoc.data() };
+    const savedEmployee = { id: newEmployeeId, ...newDoc.data() };
 
-    // Convert Firestore Timestamp to ISO string for JSON response
     if (savedEmployee.createdAt) {
       savedEmployee.createdAt = savedEmployee.createdAt.toDate().toISOString();
     }
 
     res.status(201).json(savedEmployee);
   } catch (error) {
-    console.error("Error adding employee:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to add employee", details: error.message });
+    console.error('Error adding employee:', error);
+    res.status(500).json({ error: 'Failed to add employee', details: error.message });
   }
 });
 
