@@ -8,7 +8,7 @@
 
     username: 'admin',
     password: 'admin123',
-
+These credentials are the the Top/ Super Admin
 
 ## Installation
 rounded-systems/employee-register
