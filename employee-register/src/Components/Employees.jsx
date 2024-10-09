@@ -290,49 +290,53 @@ const Employees = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Surname</TableCell>
-            <TableCell>Position</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>ID Number</TableCell>
-            <TableCell>Image</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {filteredEmployees.map((emp, index) => (
-            <TableRow key={emp.id}>
-              <TableCell>{emp.id}</TableCell>
-              <TableCell>{emp.name}</TableCell>
-              <TableCell>{emp.surname}</TableCell>
-              <TableCell>{emp.position}</TableCell>
-              <TableCell>{emp.email}</TableCell>
-              <TableCell>{emp.idNumber}</TableCell>
-              <TableCell>
-                {emp.picture && (
-                  <img src={emp.picture} alt={emp.name} width="50" />
-                )}
-              </TableCell>
-              <TableCell>
-                <IconButton color="primary" onClick={() => handleEdit(index)}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  color="secondary"
-                  onClick={() => handleDelete(emp.id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </TableCell>
+      {loading ? (
+        <CircularProgress sx={{ display: "block", margin: "20px auto" }} />
+      ) : (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Surname</TableCell>
+              <TableCell>Position</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>ID Number</TableCell>
+              <TableCell>Image</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {filteredEmployees.map((emp, index) => (
+              <TableRow key={emp.id}>
+                <TableCell>{emp.id}</TableCell>
+                <TableCell>{emp.name}</TableCell>
+                <TableCell>{emp.surname}</TableCell>
+                <TableCell>{emp.position}</TableCell>
+                <TableCell>{emp.email}</TableCell>
+                <TableCell>{emp.idNumber}</TableCell>
+                <TableCell>
+                  {emp.picture && (
+                    <img src={emp.picture} alt={emp.name} width="50" />
+                  )}
+                </TableCell>
+                <TableCell>
+                  <IconButton color="primary" onClick={() => handleEdit(index)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    color="secondary"
+                    onClick={() => handleDelete(emp.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+
 
       <Snackbar
         open={alert.open}

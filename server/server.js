@@ -69,10 +69,10 @@ app.post("/api/employees", async (req, res) => {
     }
     /// Auto ID
 
-    const employeeId = uuidv4();
+    // const employeeId = uuidv4();
 
     const newEmployee = {
-      id: employeeId, // Store this unique ID in the document
+      // id: employeeId, // Store this unique ID in the document
       name,
       surname,
       position,
