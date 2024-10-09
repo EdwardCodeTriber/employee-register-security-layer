@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Avatar, Grid, Box } from '@mui/material';
-import { db, auth, storage } from '../firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { TextField, Button, Typography, Container, Box, Snackbar, CircularProgress } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+import axios from 'axios';
 
 const AdminAdd = () => {
   const [formData, setFormData] = useState({
@@ -16,41 +14,37 @@ const AdminAdd = () => {
     role: 'admin',
     photo: null,
   });
+  
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ open: false, message: '', severity: '' });
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handlePhotoChange = (e) => setFormData({ ...formData, photo: e.target.files[0] });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setAlert({ open: false, message: '', severity: '' });
+
+    const formDataObj = new FormData();
+    Object.keys(formData).forEach((key) => formDataObj.append(key, formData[key]));
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      const userId = userCredential.user.uid;
-
-      // Upload photo to Firebase Storage
-      let photoURL = '';
-      if (formData.photo) {
-        const photoRef = ref(storage, `adminPhotos/${userId}`);
-        await uploadBytes(photoRef, formData.photo);
-        photoURL = await getDownloadURL(photoRef);
-      }
-
-      // Save admin details in Firestore
-      await setDoc(doc(db, 'admins', userId), {
-        name: formData.name,
-        surname: formData.surname,
-        age: formData.age,
-        idNumber: formData.idNumber,
-        role: formData.role,
-        photoURL,
+      await axios.post('http://localhost:5000/api/admins/add-admin', formDataObj, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      alert('Admin added successfully');
+      setAlert({ open: true, message: 'Admin added successfully', severity: 'success' });
       setFormData({ email: '', password: '', name: '', surname: '', age: '', idNumber: '', role: 'admin', photo: null });
     } catch (error) {
-      console.error('Error adding admin:', error.message);
-      alert('Error adding admin');
+      console.error('Error adding admin:', error);
+      setAlert({ open: true, message: 'Error adding admin', severity: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleCloseAlert = () => setAlert({ ...alert, open: false });
 
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
@@ -66,8 +60,15 @@ const AdminAdd = () => {
           Upload Photo
           <input type="file" accept="image/*" onChange={handlePhotoChange} hidden required />
         </Button>
-        <Button type="submit" variant="contained" color="primary">Add Admin</Button>
+        <Button type="submit" variant="contained" color="primary" disabled={loading}>
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Add Admin'}
+        </Button>
       </Box>
+      <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <MuiAlert elevation={6} variant="filled" onClose={handleCloseAlert} severity={alert.severity}>
+          {alert.message}
+        </MuiAlert>
+      </Snackbar>
     </Container>
   );
 };

@@ -38,6 +38,7 @@ const AdminManage = () => {
             <TableCell>Name</TableCell>
             <TableCell>Surname</TableCell>
             <TableCell>Role</TableCell>
+            <TableCell>Email</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -47,6 +48,7 @@ const AdminManage = () => {
               <TableCell>{admin.name}</TableCell>
               <TableCell>{admin.surname}</TableCell>
               <TableCell>{admin.role}</TableCell>
+              {/* <TableCell>{admin.photoURL}</TableCell> */}
               <TableCell>
                 <Button onClick={() => handleRemoveAdmin(admin.id)} color="secondary">Remove Rights</Button>
               </TableCell>

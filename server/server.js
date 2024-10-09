@@ -14,6 +14,7 @@ const db = admin.firestore();
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+// app.use('/api/admins', adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 
