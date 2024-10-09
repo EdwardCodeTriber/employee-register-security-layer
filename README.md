@@ -12,7 +12,9 @@
 
 ## Installation
 rounded-systems/employee-register
-- npm install @mui/material @emotion/react @emotion/styled @mui/icons-material react-router-dom axios
+- npm install @mui/material @emotion/react @emotion/styled @mui/icons-material react-router-dom axios 
+- npm install moment
+moment is used for date format
 rounded-systems/server
 - npm install express nodemon
 - npm install nodemon -D

@@ -3,7 +3,6 @@ const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-
 // Firebase Admin SDK initialization
 const serviceAccount = require("./employee-node-6d9ec-firebase-adminsdk-44lp0-b147227770.json");
 admin.initializeApp({
@@ -59,22 +58,22 @@ app.get("/api/employees", async (req, res) => {
 });
 
 // POST METHOD - Add a new employee
-app.post('/api/employees', async (req, res) => {
+app.post("/api/employees", async (req, res) => {
   try {
     const { name, surname, position, email, idNumber, picture } = req.body;
 
     if (!name || !surname || !position || !email || !idNumber) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
     // Get and increment the lastEmployeeId counter
-    const counterRef = db.collection('counters').doc('employeeCounter');
+    const counterRef = db.collection("counters").doc("employeeCounter");
     let newEmployeeId;
 
     await db.runTransaction(async (transaction) => {
       const counterDoc = await transaction.get(counterRef);
       if (!counterDoc.exists) {
-        // Initialize 
+        // Initialize
         newEmployeeId = 1;
         transaction.set(counterRef, { lastEmployeeId: newEmployeeId });
       } else {
@@ -97,7 +96,7 @@ app.post('/api/employees', async (req, res) => {
     };
 
     // Save new employee data with custom document ID
-    const docRef = db.collection('employees').doc(newEmployeeId.toString());
+    const docRef = db.collection("employees").doc(newEmployeeId.toString());
     await docRef.set(newEmployee);
 
     // Fetch the newly created document to include server timestamp in response
@@ -110,8 +109,10 @@ app.post('/api/employees', async (req, res) => {
 
     res.status(201).json(savedEmployee);
   } catch (error) {
-    console.error('Error adding employee:', error);
-    res.status(500).json({ error: 'Failed to add employee', details: error.message });
+    console.error("Error adding employee:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to add employee", details: error.message });
   }
 });
 
@@ -156,13 +157,44 @@ app.put("/api/employees/:id", async (req, res) => {
 app.delete("/api/employees/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    await db.collection("employees").doc(id).delete();
-    res.status(200).json({ message: "Employee deleted successfully" });
+    // Fetch the employee data that is about to be deleted
+    const employeeRef = db.collection("employees").doc(id);
+    const employeeDoc = await employeeRef.get();
+
+    if (!employeeDoc.exists) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    const employeeData = employeeDoc.data();
+
+    // Save the employee data to the deletedEmployees collection with a timestamp
+    await db.collection("deletedEmployees").doc(id).set({
+      ...employeeData,
+      deletedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Delete the employee from the employees collection
+    await employeeRef.delete();
+
+    res.status(200).json({ message: "Employee deleted successfully and archived in deletedEmployees" });
   } catch (error) {
     console.error("Error deleting employee:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to delete employee", details: error.message });
+    res.status(500).json({ error: "Failed to delete employee", details: error.message });
+  }
+});
+
+// deleted employees
+app.get("/api/deletedEmployees", async (req, res) => {
+  try {
+    const snapshot = await db.collection("deletedEmployees").get();
+    const deletedEmployees = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.status(200).json(deletedEmployees);
+  } catch (error) {
+    console.error("Error fetching deleted employees:", error);
+    res.status(500).json({ error: "Failed to fetch deleted employees", details: error.message });
   }
 });
 

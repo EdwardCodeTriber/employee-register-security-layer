@@ -88,6 +88,9 @@ const Employees = () => {
     return !emailError;
   };
 
+
+  // Add employees & Update
+
   const handleAddEmployee = async () => {
     if (!validateForm()) {
       showAlert("Please correct the form errors", "error");
@@ -148,10 +151,13 @@ const Employees = () => {
     setOpenDialog(true);
   };
 
+  // Delete employee
+
   const handleDelete = async (id) => {
     setLoading(true);
     try {
       await axios.delete(`http://localhost:5000/api/employees/${id}`);
+      // await axios.post(`http://localhost:5000/api/deletedEmployees/${id}`)
       showAlert("Employee deleted successfully", "error");
       fetchEmployees();
     } catch (error) {

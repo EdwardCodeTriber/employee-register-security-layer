@@ -1,24 +1,54 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
-import Footer from './Footer';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "./Footer";
+import moment from "moment";
 
 const DeletedEmployees = () => {
-  const deletedEmployees = JSON.parse(localStorage.getItem('deletedEmployees')) || [];
+  const [deletedEmployees, setDeletedEmployees] = useState([]);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('admin');
-    navigate('/login');
+    navigate("/login");
   };
 
+  useEffect(() => {
+    const fetchDeletedEmployees = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/deletedEmployees");
+        const employees = response.data.map((employee) => ({
+          ...employee,
+          deletedAt: employee.deletedAt
+            ? moment(employee.deletedAt).format("MM/DD/YYYY hh:mm A")
+            : "N/A",
+        }));
+        setDeletedEmployees(employees);
+      } catch (error) {
+        console.error("Error fetching deleted employees:", error);
+      }
+    };
+
+    fetchDeletedEmployees();
+  }, []);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* AppBar Section */}
-      <AppBar position="static" sx={{ backgroundColor: '#475569' }}>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <AppBar position="static" sx={{ backgroundColor: "#475569" }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, }}>
-          Left/Previous Employees
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Left/Previous Employees
           </Typography>
           <Button color="inherit" component={Link} to="/">
             Employee List
@@ -29,10 +59,9 @@ const DeletedEmployees = () => {
         </Toolbar>
       </AppBar>
       <main style={{ flex: 1 }}>
-        <br/>
-        {/* Main Content Section */}
+        <br />
         <Container>
-          <Typography variant="h6" gutterBottom sx={{ display:'flex', justifyContent:"center"}}>
+          <Typography variant="h6" gutterBottom sx={{ display: "flex", justifyContent: "center" }}>
             Left/Previous Employees
           </Typography>
           <Table>
@@ -43,29 +72,27 @@ const DeletedEmployees = () => {
                 <TableCell>Surname</TableCell>
                 <TableCell>Position</TableCell>
                 <TableCell>Email</TableCell>
-                <TableCell>Phone</TableCell>
-                <TableCell>Image</TableCell>
+                <TableCell>ID Number</TableCell>
+                <TableCell>Deleted At</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {deletedEmployees.map((emp) => (
-                <TableRow key={emp.id}>
-                  <TableCell>{emp.id}</TableCell>
-                  <TableCell>{emp.name}</TableCell>
-                  <TableCell>{emp.surname}</TableCell>
-                  <TableCell>{emp.position}</TableCell>
-                  <TableCell>{emp.email}</TableCell>
-                  <TableCell>{emp.phone}</TableCell>
-                  <TableCell>
-                    {emp.picture && <img src={emp.picture} alt={emp.name} width="50" />}
-                  </TableCell>
+              {deletedEmployees.map((employee) => (
+                <TableRow key={employee.id}>
+                  <TableCell>{employee.id}</TableCell>
+                  <TableCell>{employee.name}</TableCell>
+                  <TableCell>{employee.surname}</TableCell>
+                  <TableCell>{employee.position}</TableCell>
+                  <TableCell>{employee.email}</TableCell>
+                  <TableCell>{employee.idNumber}</TableCell>
+                  <TableCell>{employee.deletedAt}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </Container>
       </main>
-      <Footer /> {/* Footer is pushed to the bottom */}
+      <Footer />
     </div>
   );
 };
