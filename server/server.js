@@ -2,19 +2,21 @@ const express = require("express");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { db } = require('./firebaseConfig');
+const adminRoutes = require('./api/adminRoutes');
 
 // Firebase Admin SDK initialization
-const serviceAccount = require("./employee-node-6d9ec-firebase-adminsdk-44lp0-b147227770.json");
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: "employee-node-6d9ec.appspot.com",
-});
+// const serviceAccount = require("./employee-node-6d9ec-firebase-adminsdk-44lp0-b147227770.json");
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   storageBucket: "employee-node-6d9ec.appspot.com",
+// });
 
-const db = admin.firestore();
+// const db = admin.firestore();
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
-// app.use('/api/admins', adminRoutes);
+app.use("/api/admins", adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 
@@ -169,18 +171,28 @@ app.delete("/api/employees/:id", async (req, res) => {
     const employeeData = employeeDoc.data();
 
     // Save the employee data to the deletedEmployees collection with a timestamp
-    await db.collection("deletedEmployees").doc(id).set({
-      ...employeeData,
-      deletedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    await db
+      .collection("deletedEmployees")
+      .doc(id)
+      .set({
+        ...employeeData,
+        deletedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
 
     // Delete the employee from the employees collection
     await employeeRef.delete();
 
-    res.status(200).json({ message: "Employee deleted successfully and archived in deletedEmployees" });
+    res
+      .status(200)
+      .json({
+        message:
+          "Employee deleted successfully and archived in deletedEmployees",
+      });
   } catch (error) {
     console.error("Error deleting employee:", error);
-    res.status(500).json({ error: "Failed to delete employee", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to delete employee", details: error.message });
   }
 });
 
@@ -195,7 +207,12 @@ app.get("/api/deletedEmployees", async (req, res) => {
     res.status(200).json(deletedEmployees);
   } catch (error) {
     console.error("Error fetching deleted employees:", error);
-    res.status(500).json({ error: "Failed to fetch deleted employees", details: error.message });
+    res
+      .status(500)
+      .json({
+        error: "Failed to fetch deleted employees",
+        details: error.message,
+      });
   }
 });
 
