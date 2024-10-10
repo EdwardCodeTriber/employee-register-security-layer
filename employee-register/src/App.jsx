@@ -9,7 +9,7 @@ import AdminAdd from "./Components/AdminAdd";
 import AdminManage from "./Components/AdminMnange";
 
 const App = () => {
-  // State for authenticated admin
+  // State for authenticated admin and SuperAdmin status
   const [admin, setAdmin] = useState(null); 
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
@@ -19,14 +19,16 @@ const App = () => {
       // Use Firebase auth to sign in with custom token
       await auth.signInWithCustomToken(token);
       const user = auth.currentUser;
-      // Fetch user data from Firestore to check if they are a SuperAdmin
-      const userDoc = await getDoc(doc(db, 'admins', user.uid));
-      const userData = userDoc.data();
-      setAdmin({ username: user.email });
-      setIsSuperAdmin(userData?.SuperAdmin === "Yes");
 
-      // Set the admin state with user details
-      setAdmin({ username: user.email });
+      if (user) {
+        // Fetch user data from Firestore to check if they are a SuperAdmin
+        const userDoc = await getDoc(doc(db, 'admins', user.uid));
+        const userData = userDoc.exists() ? userDoc.data() : null;
+
+        // Update state if user exists
+        setAdmin({ username: user.email });
+        setIsSuperAdmin(userData?.SuperAdmin === "Yes");
+      }
     } catch (error) {
       console.error('Error during Firebase Auth:', error);
     }
@@ -36,14 +38,19 @@ const App = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        // User is logged in, set admin with user details
+        // Set admin state
         setAdmin({ username: user.email });
+
         // Fetch the user's SuperAdmin status
         const userDoc = await getDoc(doc(db, 'admins', user.uid));
-        const userData = userDoc.data();
+        const userData = userDoc.exists() ? userDoc.data() : null;
+
+        // Update SuperAdmin status if user data exists
+        setIsSuperAdmin(userData?.SuperAdmin === "Yes");
       } else {
-        // User is logged out, clear admin state
+        // User is logged out, clear admin state and SuperAdmin status
         setAdmin(null);
+        setIsSuperAdmin(false);
       }
     });
 
@@ -51,30 +58,29 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-
   return (
     <Router>
-      
-        <Routes>
-          {/* If admin is logged in, show EmployeeList, else redirect to Login */}
-          <Route
-            path="/"
-            element={admin ? (
-              <EmployeeList admin={admin} setAdmin={setAdmin} />
-            ) : (
-              <Login setAdmin={handleLogin} />
-            )}
-          />
-          <Route path="/login" element={<Login setAdmin={handleLogin} />} />
-          {/* Only allow SuperAdmins to access AdminAdd and AdminManage */}
+      <Routes>
+        {/* If admin is logged in, show EmployeeList, else redirect to Login */}
+        <Route
+          path="/"
+          element={admin ? (
+            <EmployeeList admin={admin} setAdmin={setAdmin} />
+          ) : (
+            <Login setAdmin={handleLogin} />
+          )}
+        />
+        <Route path="/login" element={<Login setAdmin={handleLogin} />} />
+
+        {/* Only allow SuperAdmins to access AdminAdd and AdminManage */}
         {isSuperAdmin && (
           <>
             <Route path="/AdminAdd" element={<AdminAdd />} />
             <Route path="/AdminManage" element={<AdminManage />} />
           </>
         )}
-         <Route path="/deleted" element={<DeletedEmployees />} />
-         </Routes>
+        <Route path="/deleted" element={<DeletedEmployees />} />
+      </Routes>
     </Router>
   );
 };

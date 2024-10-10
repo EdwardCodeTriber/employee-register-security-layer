@@ -157,7 +157,6 @@ const Employees = () => {
     setLoading(true);
     try {
       await axios.delete(`http://localhost:5000/api/employees/${id}`);
-      // await axios.post(`http://localhost:5000/api/deletedEmployees/${id}`)
       showAlert("Employee deleted successfully", "error");
       fetchEmployees();
     } catch (error) {
@@ -327,12 +326,12 @@ const Employees = () => {
                   )}
                 </TableCell>
                 <TableCell>
-                  <IconButton color="primary" onClick={() => handleEdit(index)}>
+                  <IconButton  onClick={() => handleEdit(index)} sx={{color:"#84cc16"}}>
                     <EditIcon />
                   </IconButton>
                   <IconButton
-                    color="secondary"
                     onClick={() => handleDelete(emp.id)}
+                    sx={{color:"#b91c1c"}}
                   >
                     <DeleteIcon />
                   </IconButton>
