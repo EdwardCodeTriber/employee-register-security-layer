@@ -9,16 +9,15 @@ const AdminManage = () => {
     const fetchAdmins = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/admins');
-        setAdmins(response.data.filter((admin) => admin.role !== 'sysadmin')); // Filtering out main admin
+        const adminsList = response.data;
+        setAdmins(adminsList.filter((admin) => admin.role !== 'sysadmin'));
       } catch (error) {
-        console.error('Error fetching admins:', error.message);
+        console.error('Error retrieving admins:', error.message);
       }
     };
-
     fetchAdmins();
   }, []);
 
- // Endpoint to delete admin
   const handleRemoveAdmin = async (adminId) => {
     try {
       await axios.delete(`http://localhost:5000/api/admins/${adminId}`);
