@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, Button, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { db } from '../firebase';
-import { deleteUser } from 'firebase/auth';
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import axios from 'axios';
 
 const AdminManage = () => {
   const [admins, setAdmins] = useState([]);
 
   useEffect(() => {
     const fetchAdmins = async () => {
-      const snapshot = await getDocs(collection(db, 'admins'));
-      const adminsList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setAdmins(adminsList.filter((admin) => admin.role !== 'sysadmin'));
+      try {
+        const response = await axios.get('http://localhost:5000/api/admins');
+        setAdmins(response.data.filter((admin) => admin.role !== 'sysadmin')); // Filtering out main admin
+      } catch (error) {
+        console.error('Error fetching admins:', error.message);
+      }
     };
+
     fetchAdmins();
   }, []);
 
+ // Endpoint to delete admin
   const handleRemoveAdmin = async (adminId) => {
     try {
-      await deleteDoc(doc(db, 'admins', adminId));
-      // Assumes Firebase Admin SDK can delete user
-      await deleteUser(adminId);  
+      await axios.delete(`http://localhost:5000/api/admins/${adminId}`);
       setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin.id !== adminId));
       alert('Admin rights removed');
     } catch (error) {
@@ -38,7 +39,6 @@ const AdminManage = () => {
             <TableCell>Name</TableCell>
             <TableCell>Surname</TableCell>
             <TableCell>Role</TableCell>
-            <TableCell>Email</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -48,7 +48,6 @@ const AdminManage = () => {
               <TableCell>{admin.name}</TableCell>
               <TableCell>{admin.surname}</TableCell>
               <TableCell>{admin.role}</TableCell>
-              {/* <TableCell>{admin.photoURL}</TableCell> */}
               <TableCell>
                 <Button onClick={() => handleRemoveAdmin(admin.id)} color="secondary">Remove Rights</Button>
               </TableCell>

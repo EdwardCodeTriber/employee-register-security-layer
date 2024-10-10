@@ -2,7 +2,7 @@ const express = require("express");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { db } = require('./firebaseConfig');
+const { db } = require('./Firebase/firebaseConfig');
 const adminRoutes = require('./api/adminRoutes');
 
 // Firebase Admin SDK initialization
@@ -177,6 +177,7 @@ app.delete("/api/employees/:id", async (req, res) => {
       .set({
         ...employeeData,
         deletedAt: admin.firestore.FieldValue.serverTimestamp(),
+        
       });
 
     // Delete the employee from the employees collection

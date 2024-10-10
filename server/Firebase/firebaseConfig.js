@@ -1,4 +1,3 @@
-// firebaseConfig.js
 const admin = require('firebase-admin');
 
 // Check if Firebase is already initialized to prevent reinitialization errors
@@ -13,5 +12,6 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 const auth = admin.auth();
 const storage = admin.storage();
+const bucket = admin.storage().bucket();
 
-module.exports = { db, auth, storage };
+module.exports = { db, auth, storage, bucket };

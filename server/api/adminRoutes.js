@@ -2,17 +2,9 @@ const express = require("express");
 const multer = require("multer");
 const admin = require("firebase-admin");
 const router = express.Router();
-const { db } = require('../firebaseConfig');
+const { db, bucket } = require('../Firebase/firebaseConfig');
 
-// Initialize Firebase Admin SDK
-// const serviceAccount = require("../employee-node-6d9ec-firebase-adminsdk-44lp0-b147227770.json");
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-//   storageBucket: "employee-node-6d9ec.appspot.com",
-// });
 
-const db = admin.firestore();
-const bucket = admin.storage().bucket();
 
 // Middleware to handle file uploads
 const upload = multer({ storage: multer.memoryStorage() });
@@ -45,6 +37,7 @@ router.post("/add-admin", upload.single("photo"), async (req, res) => {
       idNumber,
       role,
       photoURL,
+      SuperAdmin: "No",
     });
 
     res.status(201).json({ message: "Admin added successfully" });
@@ -57,10 +50,16 @@ router.post("/add-admin", upload.single("photo"), async (req, res) => {
 // Route to get admins
 router.get("/admins", async (req, res) => {
   try {
+    // Fetches all documents from the "admins" collection
     const snapshot = await db.collection("admins").get();
+    
+    // Maps documents to an array of admin objects, including the document ID
     const admins = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    
+    // Sends the array of admin data as JSON
     res.json(admins);
   } catch (error) {
+    // Logs any errors and responds with a 500 status code
     console.error("Error retrieving admins:", error);
     res.status(500).json({ error: "Failed to retrieve admins" });
   }
