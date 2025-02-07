@@ -30,7 +30,7 @@ const AdminAdd = () => {
     Object.keys(formData).forEach((key) => formDataObj.append(key, formData[key]));
 
     try {
-      await axios.post('http://localhost:5001/api/admins/add-admin', formDataObj, {
+      await axios.post('https://employee-register-security-layer.onrender.com/api/admins/add-admin', formDataObj, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

@@ -8,7 +8,7 @@ const AdminManage = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/api/admins/admins');
+        const response = await axios.get('https://employee-register-security-layer.onrender.com/api/admins/admins');
         const adminsList = response.data;
         setAdmins(adminsList.filter((admin) => admin.role !== 'sysadmin'));
       } catch (error) {
@@ -20,7 +20,7 @@ const AdminManage = () => {
 
   const handleRemoveAdmin = async (adminId) => {
     try {
-      await axios.delete(`http://localhost:5001/api/admins/${adminId}`);
+      await axios.delete(`https://employee-register-security-layer.onrender.com/api/admins/${adminId}`);
       setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin.id !== adminId));
       alert('Admin rights removed');
     } catch (error) {

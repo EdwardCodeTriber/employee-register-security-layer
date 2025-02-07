@@ -27,7 +27,7 @@ const DeletedEmployees = () => {
   useEffect(() => {
     const fetchDeletedEmployees = async () => {
       try {
-        const response = await axios.get("http://localhost:5001/api/deletedEmployees");
+        const response = await axios.get("https://employee-register-security-layer.onrender.com/api/deletedEmployees");
         const employees = response.data.map((employee) => ({
           ...employee,
           deletedAt: employee.deletedAt
