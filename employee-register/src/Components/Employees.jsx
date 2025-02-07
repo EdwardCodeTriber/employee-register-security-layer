@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Container,
@@ -53,7 +53,7 @@ const Employees = () => {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/employees");
+      const response = await axios.get("http://localhost:5001/api/employees");
       setEmployees(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       showAlert("Failed to fetch employees", "error");
@@ -104,7 +104,7 @@ const Employees = () => {
 
       if (editIndex > -1) {
         await axios.put(
-          `http://localhost:5000/api/employees/${employees[editIndex].id}`,
+          `http://localhost:5001/api/employees/${employees[editIndex].id}`,
           {
             name,
             surname,
@@ -116,7 +116,7 @@ const Employees = () => {
         );
         showAlert("Employee updated successfully");
       } else {
-        await axios.post("http://localhost:5000/api/employees", {
+        await axios.post("http://localhost:5001/api/employees", {
           name,
           surname,
           position,
@@ -156,7 +156,7 @@ const Employees = () => {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/employees/${id}`);
+      await axios.delete(`http://localhost:5001/api/employees/${id}`);
       showAlert("Employee deleted successfully", "error");
       fetchEmployees();
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TextField, Button, Typography, Container, Box, Snackbar, CircularProgress } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
@@ -30,7 +30,7 @@ const AdminAdd = () => {
     Object.keys(formData).forEach((key) => formDataObj.append(key, formData[key]));
 
     try {
-      await axios.post('http://localhost:5000/api/admins/add-admin', formDataObj, {
+      await axios.post('http://localhost:5001/api/admins/add-admin', formDataObj, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

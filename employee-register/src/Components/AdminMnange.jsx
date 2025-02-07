@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Typography, Button, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import axios from 'axios';
 
@@ -8,7 +8,7 @@ const AdminManage = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/admins');
+        const response = await axios.get('http://localhost:5001/api/admins/admins');
         const adminsList = response.data;
         setAdmins(adminsList.filter((admin) => admin.role !== 'sysadmin'));
       } catch (error) {
@@ -20,7 +20,7 @@ const AdminManage = () => {
 
   const handleRemoveAdmin = async (adminId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/admins/${adminId}`);
+      await axios.delete(`http://localhost:5001/api/admins/${adminId}`);
       setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin.id !== adminId));
       alert('Admin rights removed');
     } catch (error) {

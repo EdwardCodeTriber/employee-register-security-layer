@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import EmployeeList from './Components/EmployeeList';
-import Login from './Components/Login';
-import DeletedEmployees from './Components/DeletedEmployees';
-import { auth, db } from './firebase'; 
-import { doc, getDoc } from 'firebase/firestore';
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import EmployeeList from "./Components/EmployeeList";
+import Login from "./Components/Login";
+import DeletedEmployees from "./Components/DeletedEmployees";
+import { auth, db } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
 import AdminAdd from "./Components/AdminAdd";
 import AdminManage from "./Components/AdminMnange";
 
+
 const App = () => {
   // State for authenticated admin and SuperAdmin status
-  const [admin, setAdmin] = useState(null); 
+  const [admin, setAdmin] = useState(null);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   // Function to handle login with Firebase custom token
@@ -22,7 +23,7 @@ const App = () => {
 
       if (user) {
         // Fetch user data from Firestore to check if they are a SuperAdmin
-        const userDoc = await getDoc(doc(db, 'admins', user.uid));
+        const userDoc = await getDoc(doc(db, "admins", user.uid));
         const userData = userDoc.exists() ? userDoc.data() : null;
 
         // Update state if user exists
@@ -30,7 +31,7 @@ const App = () => {
         setIsSuperAdmin(userData?.SuperAdmin === "Yes");
       }
     } catch (error) {
-      console.error('Error during Firebase Auth:', error);
+      console.error("Error during Firebase Auth:", error);
     }
   };
 
@@ -42,7 +43,7 @@ const App = () => {
         setAdmin({ username: user.email });
 
         // Fetch the user's SuperAdmin status
-        const userDoc = await getDoc(doc(db, 'admins', user.uid));
+        const userDoc = await getDoc(doc(db, "admins", user.uid));
         const userData = userDoc.exists() ? userDoc.data() : null;
 
         // Update SuperAdmin status if user data exists
@@ -58,25 +59,54 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
+  const ProtectedAdminRoute = ({ children, isSuperAdmin }) => {
+    if (!isSuperAdmin) {
+      return <Navigate to="/" replace />;
+    }
+    return children;
+  };
+
   return (
     <Router>
       <Routes>
         {/* If admin is logged in, show EmployeeList, else redirect to Login */}
         <Route
           path="/"
-          element={admin ? (
-            <EmployeeList admin={admin} setAdmin={setAdmin} />
-          ) : (
-            <Login setAdmin={handleLogin} />
-          )}
+          element={
+            admin ? (
+              <EmployeeList admin={admin} setAdmin={setAdmin} />
+            ) : (
+              <Login setAdmin={handleLogin} />
+            )
+          }
         />
         <Route path="/login" element={<Login setAdmin={handleLogin} />} />
 
         {/* Only allow SuperAdmins to access AdminAdd and AdminManage */}
-        {isSuperAdmin && (
+        {/* {isSuperAdmin && (
           <>
             <Route path="/AdminAdd" element={<AdminAdd />} />
             <Route path="/AdminManage" element={<AdminManage />} />
+          </>
+        )} */}
+        {isSuperAdmin && (
+          <>
+            <Route
+              path="/AdminAdd"
+              element={
+                <ProtectedAdminRoute isSuperAdmin={isSuperAdmin}>
+                  <AdminAdd />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/AdminManage"
+              element={
+                <ProtectedAdminRoute isSuperAdmin={isSuperAdmin}>
+                  <AdminManage />
+                </ProtectedAdminRoute>
+              }
+            />
           </>
         )}
         <Route path="/deleted" element={<DeletedEmployees />} />

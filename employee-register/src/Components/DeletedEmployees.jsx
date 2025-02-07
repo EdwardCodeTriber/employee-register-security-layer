@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   AppBar,
@@ -27,7 +27,7 @@ const DeletedEmployees = () => {
   useEffect(() => {
     const fetchDeletedEmployees = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/deletedEmployees");
+        const response = await axios.get("http://localhost:5001/api/deletedEmployees");
         const employees = response.data.map((employee) => ({
           ...employee,
           deletedAt: employee.deletedAt

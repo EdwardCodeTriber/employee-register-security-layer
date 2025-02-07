@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -14,19 +14,25 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import Employees from "./Employees";
 import Footer from "./Footer";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { auth } from "../firebase"; 
-import { updateEmail, updatePassword, sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../firebase";
+import {
+  updateEmail,
+  updatePassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 
 const EmployeeList = ({ admin, setAdmin }) => {
   const [openProfile, setOpenProfile] = useState(false);
   const [profilePicture, setProfilePicture] = useState(admin?.picture || "");
   const [newName, setNewName] = useState(admin?.username || "");
-  const [newEmail, setNewEmail] = useState(admin?.email || ""); 
+  const [newEmail, setNewEmail] = useState(admin?.email || "");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
@@ -38,6 +44,17 @@ const EmployeeList = ({ admin, setAdmin }) => {
     message: "",
     severity: "success",
   });
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   // Check if admin is logged in; if not, redirect to login page
   useEffect(() => {
@@ -159,7 +176,7 @@ const EmployeeList = ({ admin, setAdmin }) => {
     try {
       await auth.signOut();
       // Clear admin state after logging out
-      setAdmin(null); 
+      setAdmin(null);
       navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -203,9 +220,37 @@ const EmployeeList = ({ admin, setAdmin }) => {
           <Button color="inherit" onClick={handleOpenProfile}>
             Profile
           </Button>
-          <Button color="inherit" component={Link} to="/deleted">
+          {/* <Button color="inherit" component={Link} to="/deleted">
             Deleted Employees
+          </Button> */}
+          <Button
+            color="inherit"
+            onClick={handleClick}
+            aria-controls={open ? "admin-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+          >
+            Admin Options
           </Button>
+          <Menu
+            id="admin-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "admin-button",
+            }}
+          >
+            <MenuItem component={Link} to="/deleted" onClick={handleClose}>
+              Deleted Employees
+            </MenuItem>
+            <MenuItem component={Link} to="/adminadd" onClick={handleClose}>
+              Admin Add
+            </MenuItem>
+            <MenuItem component={Link} to="/adminManage" onClick={handleClose}>
+              Admin Manage
+            </MenuItem>
+          </Menu>
           <Button color="inherit" onClick={handleOpenLogoutDialog}>
             Logout
           </Button>
