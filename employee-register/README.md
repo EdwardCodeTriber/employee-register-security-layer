@@ -5,8 +5,8 @@
 
 ## LogIn Credentials
 
-    username: 'admin',
-    password: 'admin123',
+    username: 'admin@gmail.com',
+    password: '123456',
 
     #These can be edited on runtime, But if reseted it will start Over from Default
 
