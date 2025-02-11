@@ -37,4 +37,8 @@
 - Implemented CRUD (Create, Read, Update, Delete) operations for bookmarks/employees.
 - The app is responsive.
 Provide a sketch or mockup using any platform you are comfortable with, such as Figma, free-hand on paper, etc.
-![alt text](image.png)
+![alt text](image-1.png)
+## Hosted static site
+ - https://employee-register-security-admin.vercel.app/
+## Hosted web service
+ - https://employee-register-security-layer.onrender.com

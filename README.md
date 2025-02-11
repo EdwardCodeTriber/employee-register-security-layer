@@ -84,3 +84,7 @@ Provide a sketch or mockup using any platform you are comfortable with, such as 
 
 ## Testing:
 - Test the application thoroughly to ensure that all features work as expected 
+## Hosted static site
+ - https://employee-register-security-admin.vercel.app/
+## Hosted web service
+ - https://employee-register-security-layer.onrender.com
